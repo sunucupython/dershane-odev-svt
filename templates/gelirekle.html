@@ -1,0 +1,373 @@
+<!doctype html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7" lang=""> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8" lang=""> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9" lang=""> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang=""> <!--<![endif]-->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Odev</title>
+    <meta name="description" content="Odev">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/normalize.css@8.0.0/normalize.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lykmapipo/themify-icons@0.1.2/css/themify-icons.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pixeden-stroke-7-icon@1.2.3/pe-icon-7-stroke/dist/pe-icon-7-stroke.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.2.0/css/flag-icon.min.css">
+    <link rel="stylesheet" href="static/assets/css/cs-skin-elastic.css">
+    <link rel="stylesheet" href="static/assets/css/style.css">
+    <link rel="stylesheet" href="static/assets/css/lib/datatable/dataTables.bootstrap.min.css">
+    <!-- <script type="text/javascript" src="https://cdn.jsdelivr.net/html5shiv/3.7.3/html5shiv.min.js"></script> -->
+
+
+</head>
+<script>
+        function kayitOnayla() {
+    
+          
+            gelir_ekle={
+                gelir_tur:$('#gelir_tur').val(),
+                ogrno:$('#ogrno_input').val(),
+                gelir_lira:$('#gelir_input').val(),
+                gelir_not:$('#gelirnot_input').val(),
+                gelir_tarih:$('#gelirtarih_input').val(),
+            }
+            for(var x in gelir_ekle ){
+                if(gelir_ekle[x]==null||gelir_ekle[x]==""){
+                    alert("Lütfen boş alan bırakmayın!");
+                    return null;
+                }
+
+
+            }
+
+  
+
+            var myModal = new bootstrap.Modal(document.getElementById('exampleModal'), {
+  keyboard: false
+
+});
+
+                
+
+
+    
+
+
+          $("#exampleModal .modal-body").text(`${gelir_ekle.ogrno} numaralı öğrencinin ${gelir_ekle.gelir_lira} liralık ödeme kaydını eklemek üzeresiniz.`);
+           $("#exampleModal").attr('data-id');
+           myModal.show();
+
+            
+         
+        }
+
+        function kayitGonder() {
+
+        gelir_ekle={
+                gelir_tur:$('#gelir_tur').val(),
+                ogrno:$('#ogrno_input').val(),
+                gelir_lira:$('#gelir_input').val(),
+                gelir_not:$('#gelirnot_input').val(),
+                gelir_tarih:$('#gelirtarih_input').val(),
+            }
+          
+            $("#exampleModal").removeClass("in");
+            $(".modal-backdrop").remove();
+            $("#exampleModal").hide();
+            
+            $.ajax({
+            url: '/api/glrekle',
+            dataType: 'json',
+            type: 'post',
+            contentType: 'application/json',
+            data:JSON.stringify(gelir_ekle),
+          
+            success: function( data, textStatus, jQxhr ){
+                if(data["basarili"]==true){
+                    $('#kayit_bilgilendir').replaceWith(function(){
+            return `<div id="kayit_bilgilendir">
+                        <div class="alert alert-primary" role="alert">${gelir_ekle.ogrno} Numaralı Öğrencinin ${gelir_ekle.gelir_lira} Liralık Ödemesi Eklendi!</div>
+                    </div>     `
+            });
+
+                }
+                else{
+                    $('#kayit_bilgilendir').replaceWith(function(){
+                    return `<div id="kayit_bilgilendir">
+                        <div class="alert alert-danger" role="alert">${data.msg}</div>
+                    </div>   `
+            });
+        
+                }
+                
+            },
+            error: function( jqXhr, textStatus, errorThrown ){
+                alert("Bilinmeyen bir hata oluştu.");
+                console.log( errorThrown );
+            }
+        });
+          
+
+
+
+        }
+
+
+        </script>
+
+
+
+<body>
+ 
+    <!-- Left Panel -->
+    <aside id="left-panel" class="left-panel">
+        <nav class="navbar navbar-expand-sm navbar-default">
+            <div id="main-menu" class="main-menu collapse navbar-collapse">
+                <ul class="nav navbar-nav">
+                    <li class="active">
+                        <a href="index"><i class="menu-icon fa fa-laptop"></i>Anasayfa </a>
+                    </li>
+  
+                    <li class="menu-item-has-children dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i class="menu-icon fa fa-cogs"></i>Araçlar</a>
+                        <ul class="sub-menu children dropdown-menu">                            
+                            
+                                <li><i class="fa fa-table"></i><a href="ogrenciekle">Öğrenci Ekle</a></li>
+                                <li><i class="fa fa-id-badge"></i><a href="gelirekle">Gelir Ekle</a></li>
+                                <li><i class="fa fa-id-badge"></i><a href="giderekle">Gider Ekle</a></li>
+                            
+
+
+                        </ul>
+                    </li>
+                    <li class="menu-item-has-children dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i class="menu-icon fa fa-table"></i>Kayıtlar</a>
+                        <ul class="sub-menu children dropdown-menu">
+           
+                            <li><i class="fa fa-table"></i><a href="ogrenciler">Öğrenci Kayıtları</a></li>
+                            <li><i class="fa fa-table"></i><a href="gelirler">Gelir Kayıtları</a></li>
+                            <li><i class="fa fa-table"></i><a href="giderler">Gider Kayıtları</a></li>
+                        </ul>
+                    </li>
+   
+                </ul>
+            </div><!-- /.navbar-collapse -->
+        </nav>
+    </aside>
+    <!-- /#left-panel -->
+    <!-- Right Panel -->
+    <div id="right-panel" class="right-panel">
+        <!-- Header-->
+        <header id="header" class="header">
+                <div style="width:100%; position: absolute; top:0px; left:0px; right:0px;">
+                        <a id="menuToggle" class="menutoggle"><i class="fa fa-bars"></i></a>
+                        </div>
+               
+     
+            <div class="top-right"> 
+                <div class="header-menu">
+                    <div class="header-left">
+            
+
+                   
+                    <div class="user-area dropdown float-right">
+                        <a href="#" class="dropdown-toggle active" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <img class="user-avatar rounded-circle" src="static/images/admin.jpg" alt="User Avatar">
+                        </a>
+
+                        <div class="user-menu dropdown-menu">
+                           
+
+                            <a class="nav-link" href="cikis"><i class="fa fa-power -off"></i>Çıkış Yap</a>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </header>
+        <!-- /#header -->
+        <!-- Content -->
+        <div class="content">
+            <!-- Animated -->
+            <div class="animated fadeIn">
+                <!-- Widgets  -->
+                <div class="row">
+                    <!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">UYARI</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              ...
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">İPTAL ET</button>
+              <button type="button" onclick="kayitGonder()"  class="btn btn-primary">ONAYLA</button>
+            </div>
+          </div>
+        </div>
+      </div>
+                       
+                        <div class="col-md-12">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <strong class="card-title">Gelir Ekle</strong>
+                                    </div>
+                                    <div class="card-body">
+                                        <table  class="table table-striped table-bordered">
+                                            <thead>
+                                                <tr>
+                                           
+                                                    <th>GELİR.TUR</th>
+                                                    <th>OGRENCİ.NO</th>
+                                                    <th>GELİR</th>
+                                                    <th>GELİR.NOT</th>
+                                                    <th>GELİR.TARİHİ</th>
+                                                    <th>GELİR.KAYIT</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                      
+                                                    
+                                                    <td>
+
+                                                            <div class="btn-group">
+                                                                    <a class="btn btn-primary dropdown-toggle" data-toggle="dropdown" href="#">Gelir Turu Seç <span class="caret"></span></a>
+                                                                    <ul class="dropdown-menu">
+                                                                        {% for GelirTur in GelirTurlerix %}
+                                                                        {% if GelirTur.turAktif==True%}
+                                                                        <li><a href="#">{{GelirTur.gelirTurName}}</a></li>
+     
+                                                                        {% endif %}
+                                                                        
+                                                                        {% endfor %}
+                                                              
+                                                          
+                                                                    </ul>
+                                                                </div>
+                                                                <input type="hidden" id="gelir_tur">
+
+                                                          
+
+
+
+
+                                                    </td>
+
+                                                    <td><input id="ogrno_input" onkeypress="return (event.charCode >= 48 && event.charCode <= 57) ||  
+                                                        event.charCode == 46 || event.charCode == 0 "  type="text" class="form-control" ></td>   
+                                                    
+                                      
+                                                    <td><input id="gelir_input" onkeypress="return (event.charCode >= 48 && event.charCode <= 57) ||  
+                                                        event.charCode == 46 || event.charCode == 0 "  type="text" class="form-control" ></td>
+                                                    
+                                                    
+                                                    <td><input id="gelirnot_input" type="text" class="form-control" ></td>
+
+
+                                                    <td><input id="gelirtarih_input" type="date" class="form-control" ></td>
+                                                    
+                                             
+                                                   
+                                                  
+                                                    <td>
+                                                            <div style="display: flex;
+                                                            align-items: center;
+                                                            justify-content: center;" >
+                                                                    <button  id ="kaydetbtn" type="button"  disabled   class="btn btn-primary ">KAYIT EKLE</button>
+                                                                    
+                                                            
+                                                                </div>
+                                                    </td>
+                                                    
+                                                </tr>
+                                       
+                                      
+
+
+
+                                                
+                                                
+                                          
+                                                
+
+                                            
+                                 
+                          
+                                            </tbody>
+                                        </table>
+                                        <div id="kayit_bilgilendir">
+
+                                            </div>
+    
+                                    
+                                    </div>
+                                </div>
+                            </div>
+                </div>
+                
+
+
+                <!-- /Widgets -->
+           
+
+                   
+            
+        
+
+
+
+              
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery@2.2.4/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.4/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery-match-height@0.7.2/dist/jquery.matchHeight.min.js"></script>
+    <script src="static/assets/js/main.js"></script>
+    <script src="static/assets/js/lib/data-table/datatables.min.js"></script>
+    <script src="static/assets/js/lib/data-table/dataTables.bootstrap.min.js"></script>
+    <script src="static/assets/js/lib/data-table/dataTables.buttons.min.js"></script>
+    <script src="static/assets/js/lib/data-table/buttons.bootstrap.min.js"></script>
+    <script src="static/assets/js/lib/data-table/jszip.min.js"></script>
+    <script src="static/assets/js/lib/data-table/vfs_fonts.js"></script>
+    <script src="static/assets/js/lib/data-table/buttons.html5.min.js"></script>
+    <script src="static/assets/js/lib/data-table/buttons.print.min.js"></script>
+    <script src="static/assets/js/lib/data-table/buttons.colVis.min.js"></script>
+    <script src="static/assets/js/init/datatables-init.js"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+          $('#bootstrap-data-table-export').DataTable();
+      } );
+  </script>
+
+<script>
+       $(".dropdown-menu li a").click(function(){
+  var selText = $(this).text();
+  $(this).parents('.btn-group').find('.dropdown-toggle').html(selText+' <span class="caret"></span>');
+  
+  //optional store val in hidden input
+  $('#gelir_tur').val(selText);
+  $('#kaydetbtn').replaceWith(function(){
+            return `<button  id ="kaydetbtn" type="button"  onclick="kayitOnayla()"   class="btn btn-primary ">KAYIT EKLE</button>`
+            });
+});
+
+    </script>
+
+
+
+</body>
+</html>

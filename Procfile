@@ -1,0 +1,1 @@
+web: gunicorn cekirdek:app --workers 3 —-timeout 150 --keep-alive -5 
