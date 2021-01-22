@@ -23,6 +23,27 @@
     <link rel="stylesheet" href="static/assets/css/lib/datatable/dataTables.bootstrap.min.css">
     <!-- <script type="text/javascript" src="https://cdn.jsdelivr.net/html5shiv/3.7.3/html5shiv.min.js"></script> -->
 
+    <link href="https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.6.1/css/bootstrap4-toggle.min.css" rel="stylesheet">
+
+     <!-- Scripts -->
+     <script src="https://cdn.jsdelivr.net/npm/jquery@2.2.4/dist/jquery.min.js"></script>
+     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.4/dist/umd/popper.min.js"></script>
+     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/js/bootstrap.min.js"></script>
+     <script src="https://cdn.jsdelivr.net/npm/jquery-match-height@0.7.2/dist/jquery.matchHeight.min.js"></script>
+     <script src="static/assets/js/main.js"></script>
+     <script src="static/assets/js/lib/data-table/datatables.min.js"></script>
+     <script src="static/assets/js/lib/data-table/dataTables.bootstrap.min.js"></script>
+     <script src="static/assets/js/lib/data-table/dataTables.buttons.min.js"></script>
+     <script src="static/assets/js/lib/data-table/buttons.bootstrap.min.js"></script>
+     <script src="static/assets/js/lib/data-table/jszip.min.js"></script>
+     <script src="static/assets/js/lib/data-table/vfs_fonts.js"></script>
+     <script src="static/assets/js/lib/data-table/buttons.html5.min.js"></script>
+     <script src="static/assets/js/lib/data-table/buttons.print.min.js"></script>
+     <script src="static/assets/js/lib/data-table/buttons.colVis.min.js"></script>
+     <script src="static/assets/js/init/datatables-init.js"></script>
+ 
+     <script src="https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.6.1/js/bootstrap4-toggle.min.js"></script>
+
 
 </head>
 <script>
@@ -32,15 +53,22 @@
             gelir_ekle={
                 gelir_tur:$('#gelir_tur').val(),
                 ogrno:$('#ogrno_input').val(),
+                isTaksitOdemesi:$('#taksitOdemesiCheckbox')[0].checked,
                 gelir_lira:$('#gelir_input').val(),
                 gelir_not:$('#gelirnot_input').val(),
                 gelir_tarih:$('#gelirtarih_input').val(),
             }
             for(var x in gelir_ekle ){
+                if(x=="isTaksitOdemesi"){
+                    continue;
+                }
                 if(gelir_ekle[x]==null||gelir_ekle[x]==""){
+
                     alert("Lütfen boş alan bırakmayın!");
                     return null;
                 }
+       
+
 
 
             }
@@ -68,9 +96,10 @@
 
         function kayitGonder() {
 
-        gelir_ekle={
+           gelir_ekle={
                 gelir_tur:$('#gelir_tur').val(),
                 ogrno:$('#ogrno_input').val(),
+                isTaksitOdemesi:$('#taksitOdemesiCheckbox')[0].checked,
                 gelir_lira:$('#gelir_input').val(),
                 gelir_not:$('#gelirnot_input').val(),
                 gelir_tarih:$('#gelirtarih_input').val(),
@@ -139,7 +168,7 @@
                             
                                 <li><i class="fa fa-table"></i><a href="ogrenciekle">Öğrenci Ekle</a></li>
                                 <li><i class="fa fa-id-badge"></i><a href="gelirekle">Gelir Ekle</a></li>
-                                <li><i class="fa fa-id-badge"></i><a href="giderekle">Gider Ekle</a></li>
+                                <li><i class="fa fa-id-badge"></i><a href="giderekle">Gider Ekle</a></li> <li><i class="fa fa-id-badge"></i><a href="raporlar">Raporlar</a></li>
                             
 
 
@@ -229,6 +258,7 @@
                                                 <tr>
                                            
                                                     <th>GELİR.TUR</th>
+                                                    <th>TAKSİT.ÖDEMESİ</th>
                                                     <th>OGRENCİ.NO</th>
                                                     <th>GELİR</th>
                                                     <th>GELİR.NOT</th>
@@ -264,6 +294,16 @@
 
 
                                                     </td>
+
+                                                    <td>
+
+                                                        <div style="text-align:center">
+                                                
+                                                            <input  id="taksitOdemesiCheckbox"  type="checkbox" data-toggle="toggle" data-on="EVET" data-off="HAYIR" data-onstyle="success" data-offstyle="danger">
+                                                        </div>
+                                                      
+                                                    </td>
+
 
                                                     <td><input id="ogrno_input" onkeypress="return (event.charCode >= 48 && event.charCode <= 57) ||  
                                                         event.charCode == 46 || event.charCode == 0 "  type="text" class="form-control" ></td>   
@@ -330,22 +370,7 @@
 
               
 
-    <!-- Scripts -->
-    <script src="https://cdn.jsdelivr.net/npm/jquery@2.2.4/dist/jquery.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.4/dist/umd/popper.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/js/bootstrap.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/jquery-match-height@0.7.2/dist/jquery.matchHeight.min.js"></script>
-    <script src="static/assets/js/main.js"></script>
-    <script src="static/assets/js/lib/data-table/datatables.min.js"></script>
-    <script src="static/assets/js/lib/data-table/dataTables.bootstrap.min.js"></script>
-    <script src="static/assets/js/lib/data-table/dataTables.buttons.min.js"></script>
-    <script src="static/assets/js/lib/data-table/buttons.bootstrap.min.js"></script>
-    <script src="static/assets/js/lib/data-table/jszip.min.js"></script>
-    <script src="static/assets/js/lib/data-table/vfs_fonts.js"></script>
-    <script src="static/assets/js/lib/data-table/buttons.html5.min.js"></script>
-    <script src="static/assets/js/lib/data-table/buttons.print.min.js"></script>
-    <script src="static/assets/js/lib/data-table/buttons.colVis.min.js"></script>
-    <script src="static/assets/js/init/datatables-init.js"></script>
+   
 
     <script type="text/javascript">
         $(document).ready(function() {

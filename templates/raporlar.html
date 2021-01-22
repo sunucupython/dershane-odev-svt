@@ -25,196 +25,109 @@
 
 
 </head>
-
 <script>
-        function kayitSil() {
-           // $('#cottage').val(c_id);
-          
-         
-
-            var dataId = document.getElementById("exampleModal").dataset.id;
-            Giderx = {
-                giderID:dataId
+        function raporOlustur() {
+            var raporTur = $('#rapor_tur').val();
+            var linkx = '';
+            
+            if(raporTur=="Borcu Bulunmayan Öğrenciler"){
+                linkx = '/api/getborcsuz';
 
             }
-            $("#exampleModal").removeClass("in");
-            $(".modal-backdrop").remove();
-            $("#exampleModal").hide();
+            else if(raporTur=="Borçlu Öğrenciler"){
+                linkx = '/api/getborclu';
+            }
+            else{
+                alert("raporTur else oldu");
+            }
 
             $.ajax({
-            url: '/api/gdrsil',
-            dataType: 'json',
-            type: 'post',
+            url: linkx,
+            type: 'get',
             contentType: 'application/json',
-            data:JSON.stringify(Giderx),
           
             success: function( data, textStatus, jQxhr ){
-                if(data["basarili"]==true){
+                if(data["hata"]==true){
+                    alert("Sunucu kaynaklı bir hata oluştu.");
 
-                    location.reload();
-
+                }
+                else if(data.length==0){
+                    $('#raporSonucArea').replaceWith(function(){
+                    return `<div id="raporSonucArea">
+                            <div class="alert alert-warning" role="alert">
+                                        Herhangi bir kayıt bulunmuyor!
+                                    </div>
+                    </div>   `
+            });
                 }
                 else{
-                    alert(data.msg);
-        
-                }
-                
-            },
-            error: function( jqXhr, textStatus, errorThrown ){
-                alert("Bilinmeyen bir hata oluştu.");
-                console.log( errorThrown );
-            }
-        });
-
-            
-            
-
-            
-            
-            
-         
-        }
-        </script>
-
-
-<script>
-        function silOnayla(idx) {
-    
-
-            var myModal = new bootstrap.Modal(document.getElementById('exampleModal'), {
-  keyboard: false
-
-});
-
-    
-          gider_tarih = $('#gidertarih_giderkayit_id_'+idx).text();
-          gider =  $('#gider_giderkayit_id_'+idx).text();
-
-
-          $("#exampleModal .modal-body").text(`${gider_tarih} tarihinde oluşturulmuş ${gider} liralık gider kaydını silmek üzeresiniz.`);
-           $("#exampleModal").attr('data-id',idx);
-           myModal.show();
-
-            
-         
-        }
-        </script>
+                  
+                    $('#raporSonucArea').replaceWith(function(){
+                    return `<div id="raporSonucArea">
 
 
 
-<script>
-        function kayitSend(idx) {
-            gider={
-                giderID:$('#id_giderkayit_id_'+idx).text(),
-                gider_tur:$('#input_gidertur_giderkayit_id_'+idx).val(),
-              
-                gider_lira:$('#input_gider_giderkayit_id_'+idx).val(),
-                gider_not:$('#input_gidernot_giderkayit_id_'+idx).val(),
-                gider_tarih:$('#input_gidertarih_giderkayit_id_'+idx).val(),
-
-                
-
-
-            }
-            for(var x in gider ){
-                if(gider[x]==null||gider[x]==""){
-                    alert("Lütfen boş alan bırakmayın!");
-                    return null;
-                }
-	        }
-            
-            $.ajax({
-            url: '/api/gdrupdate',
-            dataType: 'json',
-            type: 'post',
-            contentType: 'application/json',
-            data:JSON.stringify(gider),
-          
-            success: function( data, textStatus, jQxhr ){
-                if(data["basarili"]==true){
-                    location.reload();
-
-                }
-                else{
-                    alert(data.msg);
-        
-                }
-                
-            },
-            error: function( jqXhr, textStatus, errorThrown ){
-                alert("Bilinmeyen bir hata oluştu.");
-                console.log( errorThrown );
-            }
-        });
-          
-           
-  
-         
-        }
-        </script>
-
-
-
-
-<script>
-        function kayitDuzenle(idx) {
-  
-            
-            gider={
-                id:$('#id_giderkayit_id_'+idx).text(),
-                tur:$('#gidertur_giderkayit_id_'+idx).text(),
-               
-                gider:$('#gider_giderkayit_id_'+idx).text(),
-                not:$('#gidernot_giderkayit_id_'+idx).text(),
-                tarih:$('#gidertarih_giderkayit_id_'+idx).text(),
-
-                
-
-
-            }
-           
-
-                                                
-     
- 
-
-                                   $('#gidertur_giderkayit_id_'+idx).replaceWith(function(){
-            return `<input id="${'input_gidertur_giderkayit_id_'+idx}"   type="text" class="form-control" value="${gider.tur}" >`
-            });
-          
-           
-          
-
-                       $('#gider_giderkayit_id_'+idx).replaceWith(function(){
-            return `<input id="${'input_gider_giderkayit_id_'+idx}" onkeypress="return (event.charCode >= 48 && event.charCode <= 57) ||  
-   event.charCode == 46 || event.charCode == 0 " type="text" class="form-control" value="${gider.gider}" >`
-            });
-
-                       $('#gidernot_giderkayit_id_'+idx).replaceWith(function(){
-            return `<input id="${'input_gidernot_giderkayit_id_'+idx}"   type="text" class="form-control" value="${gider.not}" >`
-            });
-
-                        $('#gidertarih_giderkayit_id_'+idx).replaceWith(function(){
-            return `<input id="${'input_gidertarih_giderkayit_id_'+idx}" type="date" class="form-control" value="${gider.tarih}" >`
-            });
-
-
-
-                    $('#duzenlebtn_giderkayit_id_'+idx).replaceWith(function(){
-            return ` <button  type="button" onclick="kayitSend(${idx})" class="btn btn-success ">KAYDET</button>`
-            });
-
-                       $('#silbtn_giderkayit_id_'+idx).replaceWith(function(){
-            return ""
-            });
-
-
+                                        <table id="bootstrap-data-table" class="table table-striped table-bordered">
+                                                <thead>
+                                                    <tr>
+                                                        <th>NO</th>
+                                                        <th>AD.SOYAD</th>
+                                                        <th>BORÇ</th>
    
+                                                 
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                             
+                                            
+                                                                    
+                                     
+                              
+                                                </tbody>
+                                            </table>
+                    
+                    
+                    
+                    
+                    </div>`
+                    });
+
+                    data.forEach(element => {
+
+                        $("#bootstrap-data-table").last().append(`<tr>
+                                <td><span >${element["no"]}</span></td>
+                                <td><span>${element["isim"]}</span></td>
+                                <td><span>${element["borc"]}</span></td>
+
+                        </tr>`);
+
+                        
+
+
+
+                        });
+                        
+               
+                    
+
+                }
+
+                
+            },
+            error: function( jqXhr, textStatus, errorThrown ){
+                alert("Bilinmeyen bir hata oluştu.");
+                console.log( errorThrown );
+            }
+        });
+
 
 
 
 
         }
+        
+
+        
         </script>
 
 
@@ -236,7 +149,9 @@
                             
                                 <li><i class="fa fa-table"></i><a href="ogrenciekle">Öğrenci Ekle</a></li>
                                 <li><i class="fa fa-id-badge"></i><a href="gelirekle">Gelir Ekle</a></li>
-                                <li><i class="fa fa-id-badge"></i><a href="giderekle">Gider Ekle</a></li> <li><i class="fa fa-id-badge"></i><a href="raporlar">Raporlar</a></li>
+                                <li><i class="fa fa-id-badge"></i><a href="giderekle">Gider Ekle</a></li> 
+                                <li><i class="fa fa-id-badge"></i><a href="raporlar">Raporlar</a></li>
+                              
                             
 
 
@@ -294,77 +209,59 @@
             <div class="animated fadeIn">
                 <!-- Widgets  -->
                 <div class="row">
-                    <!-- Modal -->
-<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title" id="exampleModalLabel">UYARI</h5>
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-              </button>
-            </div>
-            <div class="modal-body">
-              ...
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-dismiss="modal">İPTAL ET</button>
-              <button type="button" onclick="kayitSil()"  class="btn btn-primary">ONAYLA</button>
-            </div>
-          </div>
-        </div>
-      </div>
+
                        
                         <div class="col-md-12">
                                 <div class="card">
                                     <div class="card-header">
-                                        <strong class="card-title">Gider Kayıtları</strong>
+                                        <strong class="card-title">Rapor Oluştur</strong>
                                     </div>
                                     <div class="card-body">
-                                        {% if Giderler==[]%}
-                                            <div class="alert alert-warning" role="alert">
-                                                Herhangi bir kayıt bulunmuyor!
-                                            </div>
-                                        {% else %}
-                                        <table id="bootstrap-data-table" class="table table-striped table-bordered">
+                                        <table  class="table table-striped table-bordered">
                                             <thead>
-                                               
                                                 <tr>
-                                                    <th>ID</th>
-                                                    <th>GİDER.TUR</th>
+                                           
+                                                    <th>RAPOR.TUR</th>
                                      
-                                                    <th>GİDER</th>
-                                                    <th>GİDER.NOT</th>
-                                                    <th>KAYIT.TARİHİ</th>
-                                                    <th>KAYIT.DURUMU</th>
+                    
+                                                    <th>RAPOR.OLUSTUR</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                            {% for Gider in Giderler %}
                                                 <tr>
-
+                                      
                                                     
-                                                    <td><span id="id_giderkayit_id_{{Gider.idx}}">{{Gider.idx}}</span></td>
-                                                    <td><span id="gidertur_giderkayit_id_{{Gider.idx}}">{{Gider.giderTur}}</span></td>
+                                                    <td>
+
+                                                            <div class="btn-group">
+                                                                    <a class="btn btn-primary dropdown-toggle" data-toggle="dropdown" href="#">Rapor Seç <span class="caret"></span></a>
+                                                                    <ul class="dropdown-menu">
+                                                                            <li><a href="#">Borcu Bulunmayan Öğrenciler</a></li>
+                                                                            <li><a href="#">Borçlu Öğrenciler</a></li>
+                                                          
+                                                                    </ul>
+                                                                </div>
+                                                                <input type="hidden" id="rapor_tur">
+
+                                                          
+
+
+
+
+                                                    </td>
                     
                                       
-                                                    <td><span id="gider_giderkayit_id_{{Gider.idx}}">{{Gider.gider}}</span></td>
-                                                    <td><span id="gidernot_giderkayit_id_{{Gider.idx}}">{{Gider.giderNot}}</span></td>
-                                                    <td><span id="gidertarih_giderkayit_id_{{Gider.idx}}">{{Gider.kayitTarih}}</span></td>
+                                                  
+                              
+                                             
                                                    
                                                   
                                                     <td>
-                                                            <div style="display: flex;
-                                                            align-items: center;
-                                                            justify-content: center;" >
-                                                                    <button type="button" id="duzenlebtn_giderkayit_id_{{Gider.idx}}" onclick="kayitDuzenle({{Gider.idx}})" class="btn btn-primary ">KAYIT DÜZENLE</button>
-                                                                    <button style="margin-left: 10px" type="button" id="silbtn_giderkayit_id_{{Gider.idx}}" onclick="silOnayla({{Gider.idx}})" class="btn btn-danger ">KAYIT SİL</button>
-                                                            
-                                                                </div>
+                                                            <button  id ="raporOlusturBtn" type="button"  disabled   class="btn btn-primary ">Rapor Oluştur</button>
                                                     </td>
                                                     
                                                 </tr>
-                                                {% endfor %}
+                                       
                                       
 
 
@@ -379,8 +276,15 @@
                           
                                             </tbody>
                                         </table>
-                                        {% endif %}
+                                      
+    
+                                    
                                     </div>
+                         
+                                </div>
+                                <div id="raporSonucArea">
+        
+                       
                                 </div>
                             </div>
                 </div>
@@ -392,11 +296,7 @@
 
                    
             
-                
-
-
-
-
+        
 
 
 
@@ -424,6 +324,20 @@
           $('#bootstrap-data-table-export').DataTable();
       } );
   </script>
+
+<script>
+       $(".dropdown-menu li a").click(function(){
+  var selText = $(this).text();
+  $(this).parents('.btn-group').find('.dropdown-toggle').html(selText+' <span class="caret"></span>');
+  
+  //optional store val in hidden input
+  $('#rapor_tur').val(selText);
+  $('#raporOlusturBtn').replaceWith(function(){
+            return `<button  id ="raporOlusturBtn" type="button"  onclick="raporOlustur()"   class="btn btn-primary ">Rapor Oluştur</button>`
+            });
+});
+
+    </script>
 
 
 

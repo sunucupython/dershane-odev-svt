@@ -23,6 +23,28 @@
     <link rel="stylesheet" href="static/assets/css/lib/datatable/dataTables.bootstrap.min.css">
     <!-- <script type="text/javascript" src="https://cdn.jsdelivr.net/html5shiv/3.7.3/html5shiv.min.js"></script> -->
 
+    <link href="https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.6.1/css/bootstrap4-toggle.min.css" rel="stylesheet">
+
+        <!-- Scripts -->
+        <script src="https://cdn.jsdelivr.net/npm/jquery@2.2.4/dist/jquery.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.4/dist/umd/popper.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/js/bootstrap.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/jquery-match-height@0.7.2/dist/jquery.matchHeight.min.js"></script>
+        <script src="static/assets/js/main.js"></script>
+        <script src="static/assets/js/lib/data-table/datatables.min.js"></script>
+        <script src="static/assets/js/lib/data-table/dataTables.bootstrap.min.js"></script>
+        <script src="static/assets/js/lib/data-table/dataTables.buttons.min.js"></script>
+        <script src="static/assets/js/lib/data-table/buttons.bootstrap.min.js"></script>
+        <script src="static/assets/js/lib/data-table/jszip.min.js"></script>
+        <script src="static/assets/js/lib/data-table/vfs_fonts.js"></script>
+        <script src="static/assets/js/lib/data-table/buttons.html5.min.js"></script>
+        <script src="static/assets/js/lib/data-table/buttons.print.min.js"></script>
+        <script src="static/assets/js/lib/data-table/buttons.colVis.min.js"></script>
+        <script src="static/assets/js/init/datatables-init.js"></script>
+
+        <script src="https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.6.1/js/bootstrap4-toggle.min.js"></script>
+
+
 
 </head>
 
@@ -105,6 +127,7 @@
             gelir={
                 gelirID:$('#id_gkayit_id_'+idx).text(),
                 gelir_tur:$('#input_gelirtur_gkayit_id_'+idx).val(),
+                isTaksitOdemesi:$('#taksitOdemesiCheckbox_id_'+idx)[0].checked,
                 ogrno:$('#input_ogrno_gkayit_id_'+idx).val(),
                 gelir_lira:$('#input_gelir_gkayit_id_'+idx).val(),
                 gelir_not:$('#input_gelirnot_gkayit_id_'+idx).val(),
@@ -114,12 +137,22 @@
 
 
             }
+
             for(var x in gelir ){
+                if(x=="isTaksitOdemesi"){
+                    continue;
+                }
                 if(gelir[x]==null||gelir[x]==""){
+
                     alert("Lütfen boş alan bırakmayın!");
                     return null;
                 }
-	        }   
+       
+
+
+
+            }
+
             $.ajax({
             url: '/api/glrupdate',
             dataType: 'json',
@@ -178,6 +211,14 @@
                                    $('#gelirtur_gkayit_id_'+idx).replaceWith(function(){
             return `<input id="${'input_gelirtur_gkayit_id_'+idx}"   type="text" class="form-control" value="${gelir.tur}" >`
             });
+
+                
+                $('#taksitOdemesiViewArea_id_'+idx).show();
+                $('#taksitOdemesiTextBox_id_'+idx).css("display","none");
+                
+             
+         
+
           
            
             $('#ogrno_gkayit_id_'+idx).replaceWith(function(){
@@ -190,6 +231,7 @@
             return `<input id="${'input_gelir_gkayit_id_'+idx}" onkeypress="return (event.charCode >= 48 && event.charCode <= 57) ||  
    event.charCode == 46 || event.charCode == 0 "   type="text" class="form-control" value="${gelir.gelir}" >`
             });
+            
 
                        $('#gelirnot_gkayit_id_'+idx).replaceWith(function(){
             return `<input id="${'input_gelirnot_gkayit_id_'+idx}"   type="text" class="form-control" value="${gelir.not}" >`
@@ -237,7 +279,7 @@
                             
                                 <li><i class="fa fa-table"></i><a href="ogrenciekle">Öğrenci Ekle</a></li>
                                 <li><i class="fa fa-id-badge"></i><a href="gelirekle">Gelir Ekle</a></li>
-                                <li><i class="fa fa-id-badge"></i><a href="giderekle">Gider Ekle</a></li>
+                                <li><i class="fa fa-id-badge"></i><a href="giderekle">Gider Ekle</a></li> <li><i class="fa fa-id-badge"></i><a href="raporlar">Raporlar</a></li>
                             
 
 
@@ -332,6 +374,7 @@
                                                 <tr>
                                                     <th>ID</th>
                                                     <th>GELİR.TUR</th>
+                                                    <th>TAKSİT.ÖDEMESİ</th>
                                                     <th>OGRENCİ.NO</th>
                                                     <th>GELİR</th>
                                                     <th>GELİR.NOT</th>
@@ -345,7 +388,31 @@
                                                     
                                                     <td><span id="id_gkayit_id_{{Gelir.idx}}">{{Gelir.idx}}</span></td>
                                                     <td><span id="gelirtur_gkayit_id_{{Gelir.idx}}">{{Gelir.gelirTur}}</span></td>
-                    
+                                                    {% if Gelir.taksitOdemesiMi%}
+                                                    <td>    
+                                                        
+                                                        <div style="text-align:center;">
+                                                    
+                                                            <span id="taksitOdemesiTextBox_id_{{Gelir.idx}}">EVET</span>
+                                                            <div id="taksitOdemesiViewArea_id_{{Gelir.idx}}" style="display:none"> 
+                                                                  
+                                                                    <input  id="taksitOdemesiCheckbox_id_{{Gelir.idx}}" checked type="checkbox" data-toggle="toggle" data-on="EVET" data-off="HAYIR" data-onstyle="success" data-offstyle="danger">
+                                                                </div>
+                                                    </td>
+                                                    {% else %}
+                                                    <td>
+                                                            <div style="text-align:center;">
+                                                                    <span id="taksitOdemesiTextBox_id_{{Gelir.idx}}">HAYIR</span>
+                                                                <div id="taksitOdemesiViewArea_id_{{Gelir.idx}}" style="display:none"> 
+                                                                        <input  id="taksitOdemesiCheckbox_id_{{Gelir.idx}}"  type="checkbox" data-toggle="toggle" data-on="EVET" data-off="HAYIR" data-onstyle="success" data-offstyle="danger">
+                                                                
+                                                                </div>
+                                                                
+                                                            </div>
+            
+                                                    
+                                                    </td>
+                                                    {% endif %}
                                                     <td><span id="ogrno_gkayit_id_{{Gelir.idx}}">{{Gelir.ogrNo}}</span></td>
                                                     <td><span id="gelir_gkayit_id_{{Gelir.idx}}">{{Gelir.gelir}}</span></td>
                                                     <td><span id="gelirnot_gkayit_id_{{Gelir.idx}}">{{Gelir.gelirNot}}</span></td>
@@ -379,6 +446,7 @@
                                             </tbody>
                                         </table>
                                         {% endif %}
+                                        
                                     </div>
                                 </div>
                             </div>
@@ -401,22 +469,7 @@
 
               
 
-    <!-- Scripts -->
-    <script src="https://cdn.jsdelivr.net/npm/jquery@2.2.4/dist/jquery.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.4/dist/umd/popper.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/js/bootstrap.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/jquery-match-height@0.7.2/dist/jquery.matchHeight.min.js"></script>
-    <script src="static/assets/js/main.js"></script>
-    <script src="static/assets/js/lib/data-table/datatables.min.js"></script>
-    <script src="static/assets/js/lib/data-table/dataTables.bootstrap.min.js"></script>
-    <script src="static/assets/js/lib/data-table/dataTables.buttons.min.js"></script>
-    <script src="static/assets/js/lib/data-table/buttons.bootstrap.min.js"></script>
-    <script src="static/assets/js/lib/data-table/jszip.min.js"></script>
-    <script src="static/assets/js/lib/data-table/vfs_fonts.js"></script>
-    <script src="static/assets/js/lib/data-table/buttons.html5.min.js"></script>
-    <script src="static/assets/js/lib/data-table/buttons.print.min.js"></script>
-    <script src="static/assets/js/lib/data-table/buttons.colVis.min.js"></script>
-    <script src="static/assets/js/init/datatables-init.js"></script>
+
 
     <script type="text/javascript">
         $(document).ready(function() {
