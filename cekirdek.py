@@ -31,6 +31,7 @@ class Ogrenci(db.Model):
     adres=db.Column(db.Text)
 class GelirKayitlari(db.Model):
     idx = db.Column(db.Integer, primary_key=True)
+    taksitOdemesiMi=db.Column(db.Boolean)
     gelirTur=db.Column(db.Text)
     ogrNo = db.Column(db.Integer)
     gelir=db.Column(db.Float)
@@ -74,6 +75,13 @@ def kimlikd(f):
         except:
             return render_template("hata401.html"), 401
     return wrapper
+
+class SetEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, set):
+            return list(obj)
+        return json.JSONEncoder.default(self, obj)
+
 
 
 @app.route("/uyari")
@@ -193,7 +201,13 @@ def glrrekle():
             donut = {"hata":True,"msg":"Bu OGRENCİ.NO ile bir öğrenci bulunmadı"}
             return jsonify(donut)
         else:
+            if(veri["isTaksitOdemesi"]==True and Ogrencix.borc<=0):
+                donut = {"hata":True,"msg":"Öğrencinin borcu bulunmadığı için taksit ödemesi eklenemedi!"}
+                return jsonify(donut)
+            elif(veri["isTaksitOdemesi"]==True and Ogrencix.borc>0) :
+                Ogrencix.borc-=float(veri["gelir_lira"])
             db.session.add(GelirKayitlari(gelirTur=veri["gelir_tur"],
+            taksitOdemesiMi=veri["isTaksitOdemesi"],
             ogrNo=veri["ogrno"],
             gelir=veri["gelir_lira"],
             gelirNot=veri["gelir_not"],
@@ -241,9 +255,19 @@ def glrupdate():
             if OGRVarmi==None:
                 donut = {"hata":True,"msg":"Bu OGRENCİ.NO ile bir öğrenci bulunamadı"}
                 return jsonify(donut)
+            if(veri["isTaksitOdemesi"]==True and GelirVarmi.taksitOdemesiMi==False):
+                #normal gelir taksit ödemesine çevrileecek
+                if OGRVarmi.borc<=0:
+                    donut = {"hata":True,"msg":"Öğrencinin borcu bulunmadığı için taksit ödemesi eklenemedi!"}
+                    return jsonify(donut)
+                else:
+                     OGRVarmi.borc-=float(veri["gelir_lira"])
+            elif(veri["isTaksitOdemesi"]==False and GelirVarmi.taksitOdemesiMi==True):
+                OGRVarmi.borc+=float(veri["gelir_lira"])
             IstatistiklerTablo=Istatistikler.query.get(1)
             IstatistiklerTablo.toplamGelir-= GelirVarmi.gelir
             GelirVarmi.gelirTur=veri["gelir_tur"]
+            GelirVarmi.taksitOdemesiMi = veri["isTaksitOdemesi"]
             GelirVarmi.ogrNo=veri["ogrno"]
             GelirVarmi.gelir=veri["gelir_lira"]
             GelirVarmi.gelirNot=veri["gelir_not"]
@@ -320,6 +344,35 @@ def gdrupdate():
         return jsonify(donut)
 
 
+@app.route("/api/getborcsuz")
+def getborcsuz():
+    try:
+        ogrenciler  = Ogrenci.query.all()
+        veri=[]
+        for i in ogrenciler:
+            if i.borc<=0:
+                veri.append({"no":i.no,"isim":i.fullName,"borc":i.borc})
+        return jsonify(veri)
+    except Exception as e:
+        print(e)
+        donut = {"hata":True,"msg":"Hata"}
+        return jsonify(donut)
+
+@app.route("/api/getborclu")
+def getborclu():
+    try:
+        ogrenciler  = Ogrenci.query.all()
+        veri=[]
+        for i in ogrenciler:
+            if i.borc>0:
+                veri.append({"no":i.no,"isim":i.fullName,"borc":i.borc})
+        return jsonify(veri)
+    except Exception as e:
+        print(e)
+        donut = {"hata":True,"msg":"Hata"}
+        return jsonify(donut)
+
+
 @app.route("/ogrenciler")
 @kimlikd
 def ogrenciler():
@@ -335,7 +388,10 @@ def gelirler():
 def giderler():
     Giderlerx = GiderKayitlari.query.all()
     return render_template("giderler.html",Giderler=Giderlerx)
-
+@app.route("/raporlar")
+@kimlikd
+def raporlar():
+    return render_template("raporlar.html")
 
 
 
@@ -343,6 +399,10 @@ def giderler():
 def sifresiz():
     try:
         hashCode = request.args.get("hash")
+        if hashCode==None:
+            donut = {"hata":True,"msg":"Hash kodu None"}
+            return jsonify(donut)
+
         Sifresizx = SifresizGir.query.filter_by(codex=hashCode).first()
         if Sifresizx==None:
             donut = {"hata":True,"msg":"hatali hash"}
@@ -374,4 +434,4 @@ def cikis():
 
 
 if __name__=="__main__":
-    app.run(debug=True)
+    app.run(debug=True,port=80)
